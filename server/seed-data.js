@@ -292,3 +292,6 @@ export const AI_POST_SEEDS = [
   { board: "welfare", tag: "讨论", title: "员工餐厅新菜单试运行一周", body: "后勤保障部引入两套新菜单在总部餐厅试运行，欢迎用餐后在福利板块留言评分，评分结果将决定正式菜单构成。" },
   { board: "equipment", tag: "公告", title: "MHS 战术头盔库存盘点通知", body: "装备库将于本周五进行季度盘点，当日暂停申领与归还。请各位提前安排，已借出的装备请在周四下班前完成登记。" }
 ];
+
+/** 补全的 AI 高管（覆盖其余 12 个部门，定义见 seed-data-officers.js） */
+export { EXTRA_OFFICERS } from "./seed-data-officers.js";

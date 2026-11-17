@@ -87,7 +87,11 @@ export function runAutoPosts(now = Date.now()) {
     const last = lastAutoPost.get(o.id) || 0;
     if (now - last < o.auto_post_interval_sec * 1000) continue;
 
-    const seed = AI_POST_SEEDS[Math.floor(Math.random() * AI_POST_SEEDS.length)];
+    // 优先使用高管本职选题（每人自带 post_topics），没有才回退全局素材池，
+    // 否则财务部会发头盔盘点、情报部门会发食堂菜单。
+    const own = safeArray(o.post_topics);
+    const pool = own.length ? own : AI_POST_SEEDS;
+    const seed = pool[Math.floor(Math.random() * pool.length)];
     const board = get("SELECT id, slug FROM boards WHERE slug = ? AND is_active = 1", seed.board);
     if (!board) continue;
 

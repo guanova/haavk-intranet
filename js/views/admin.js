@@ -1035,6 +1035,7 @@ window.HAAVK = window.HAAVK || {};
               "</textarea>" +
               '<div class="field__hint">至少保留一条；最多 40 条，每条 200 字以内</div>' +
               "</div>" +
+              '<div class="field admin-field"><label class="field__label" for="off-t-' + esc(o.id) + '">自主选题 postTopics（每行一条）</label><textarea class="textarea admin-textarea" id="off-t-' + esc(o.id) + '" data-field="post_topics" rows="4">' + esc((o.postTopics || []).join("\n")) + '</textarea><div class="field__hint">留空则回退通用素材池；最多 20 条</div></div>' +
               "</div>" +
               '<div class="admin-officer__foot">' +
               '<span class="mini-note">' +
@@ -1637,6 +1638,11 @@ window.HAAVK = window.HAAVK || {};
     var ap = card.querySelector('[data-field="auto_post_interval_sec"]');
     var persona = card.querySelector('[data-field="persona"]');
     var voice = card.querySelector('[data-field="voice_lines"]');
+    var topicsEl = card.querySelector('[data-field="post_topics"]');
+    var topicsArr = String((topicsEl && topicsEl.value) || "")
+      .split(/\r?\n/)
+      .map(function (s) { return s.trim(); })
+      .filter(Boolean);
     var enabled = card.querySelector('[data-field="enabled"]');
     var canReview = card.querySelector('[data-field="can_review_mentions"]');
 
@@ -1670,6 +1676,7 @@ window.HAAVK = window.HAAVK || {};
         auto_post_interval_sec: apNum,
         persona: String((persona && persona.value) || ""),
         voice_lines: lines,
+        post_topics: topicsArr,
         enabled: !!(enabled && enabled.checked),
         can_review_mentions: !!(canReview && canReview.checked)
       })

@@ -134,13 +134,21 @@ function drawAvatar({ bg, accent, skin, silhouette }) {
 
 /* ------------------------------ 落盘与登记 ------------------------------ */
 
+/* 12 组色板：高管人数已超过 6 位，若只用 6 组会有两张头像完全相同、
+   在同一条帖子流里看起来像同一个人。色相仍锁定在哈夫克的蓝灰区间。 */
 const PALETTES = [
   { bg: "#1687e8", accent: "#3fb0ff", skin: "#f0d6c2", silhouette: "#1b1d20" },
   { bg: "#1e9bf0", accent: "#7fd0ff", skin: "#e8c9a8", silhouette: "#22252a" },
   { bg: "#2b2929", accent: "#4a5158", skin: "#e6c9ae", silhouette: "#101214" },
   { bg: "#0e7cd4", accent: "#39a9f5", skin: "#f2dcc8", silhouette: "#191b1e" },
   { bg: "#39404a", accent: "#6d757c", skin: "#e9cdb0", silhouette: "#14161a" },
-  { bg: "#1a7fd5", accent: "#63c0ff", skin: "#efd3ba", silhouette: "#1d2024" }
+  { bg: "#1a7fd5", accent: "#63c0ff", skin: "#efd3ba", silhouette: "#1d2024" },
+  { bg: "#134f7a", accent: "#4d8fb8", skin: "#edcfb4", silhouette: "#12161a" },
+  { bg: "#25617f", accent: "#6ba6c4", skin: "#f1d8c0", silhouette: "#161a1e" },
+  { bg: "#3a4a5c", accent: "#7e93a8", skin: "#e7c8ac", silhouette: "#12151a" },
+  { bg: "#0f6a8c", accent: "#43b3d4", skin: "#f0d5bd", silhouette: "#14181c" },
+  { bg: "#4a3f52", accent: "#8b7f96", skin: "#ecd0b6", silhouette: "#181619" },
+  { bg: "#20505f", accent: "#5e97a8", skin: "#eacdb2", silhouette: "#13171a" }
 ];
 
 function assignAvatar(userId, palette) {

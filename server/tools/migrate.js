@@ -5,11 +5,12 @@ import * as m001 from "../migrations/001_init.js";
 import * as m002 from "../migrations/002_post_likes.js";
 import * as m003 from "../migrations/003_submissions.js";
 import * as m004 from "../migrations/004_submission_reward.js";
+import * as m005 from "../migrations/005_officer_topics.js";
 import { seedAll, seedStats } from "../lib/seed.js";
 import { getDb } from "../lib/db.js";
 
 const withSeed = process.argv.includes("--seed");
-const { applied, current } = migrate([m001, m002, m003, m004]);
+const { applied, current } = migrate([m001, m002, m003, m004, m005]);
 console.log(`[migrate] schema 版本 v${current}${applied.length ? `，本次应用：${applied.join(", ")}` : "，无待应用迁移"}`);
 
 if (withSeed) {

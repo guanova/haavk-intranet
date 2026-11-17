@@ -8,7 +8,7 @@ import { createUser, findUserByUsername } from "./auth.js";
 import { ensureSeeded as ensureSettingsSeeded } from "./settings.js";
 import { ROLES, USER_STATUS, POINTS_REASON } from "../constants.js";
 import { addPoints } from "./points.js";
-import { DEPARTMENTS, JOBS, BOARDS, AI_OFFICERS } from "../seed-data.js";
+import { DEPARTMENTS, JOBS, BOARDS, AI_OFFICERS, EXTRA_OFFICERS } from "../seed-data.js";
 
 function upsertDepartments() {
   let created = 0;
@@ -104,15 +104,16 @@ export function seedSystemAccounts({ adminPassword, officerPassword, verbose = t
   }
 
   // —— AI 高管代理：关联 users(role=ai_officer) + ai_officers 配置 ——
-  for (const o of AI_OFFICERS) {
+  for (const o of [...AI_OFFICERS, ...EXTRA_OFFICERS]) {
     const existUser = findUserByUsername(o.username);
     if (existUser) {
       const existOfficer = get("SELECT id FROM ai_officers WHERE user_id = ?", existUser.id);
       if (!existOfficer) {
         run(
           `INSERT INTO ai_officers (user_id, codename, title, department_id, persona, voice_lines,
-                                    authority_level, can_review_mentions, auto_post_interval_sec, enabled, created_at)
-           VALUES (?,?,?,?,?,?,?,?,?,1,?)`,
+                                    authority_level, can_review_mentions, auto_post_interval_sec,
+                                    post_topics, enabled, created_at)
+           VALUES (?,?,?,?,?,?,?,?,?,?,1,?)`,
           existUser.id,
           o.codename,
           o.title,
@@ -122,6 +123,7 @@ export function seedSystemAccounts({ adminPassword, officerPassword, verbose = t
           o.authorityLevel,
           o.canReviewMentions ? 1 : 0,
           o.autoPostIntervalSec,
+          JSON.stringify(o.postTopics || []),
           Date.now()
         );
       }
@@ -141,8 +143,9 @@ export function seedSystemAccounts({ adminPassword, officerPassword, verbose = t
     });
     run(
       `INSERT INTO ai_officers (user_id, codename, title, department_id, persona, voice_lines,
-                                authority_level, can_review_mentions, auto_post_interval_sec, enabled, created_at)
-       VALUES (?,?,?,?,?,?,?,?,?,1,?)`,
+                                authority_level, can_review_mentions, auto_post_interval_sec,
+                                post_topics, enabled, created_at)
+       VALUES (?,?,?,?,?,?,?,?,?,?,1,?)`,
       userId,
       o.codename,
       o.title,
@@ -152,6 +155,7 @@ export function seedSystemAccounts({ adminPassword, officerPassword, verbose = t
       o.authorityLevel,
       o.canReviewMentions ? 1 : 0,
       o.autoPostIntervalSec,
+      JSON.stringify(o.postTopics || []),
       Date.now()
     );
     // 高管账号需要余额支撑"转阅回复"的记账

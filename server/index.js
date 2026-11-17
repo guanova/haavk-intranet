@@ -14,6 +14,7 @@ import * as migration001 from "./migrations/001_init.js";
 import * as migration002 from "./migrations/002_post_likes.js";
 import * as migration003 from "./migrations/003_submissions.js";
 import * as migration004 from "./migrations/004_submission_reward.js";
+import * as migration005 from "./migrations/005_officer_topics.js";
 import { seedAll, seedStats } from "./lib/seed.js";
 
 /* ------------------------------ 路由与处理器 ------------------------------ */
@@ -199,7 +200,7 @@ async function handle(req, res) {
 
 export function boot({ seed = true, workers = true, verbose = true } = {}) {
   const dbFile = process.env.HAAVK_DB || path.resolve(process.cwd(), "data/haavk.db");
-  const { applied, current } = migrate([migration001, migration002, migration003, migration004]);
+  const { applied, current } = migrate([migration001, migration002, migration003, migration004, migration005]);
   assertSchemaReady();
   if (verbose) {
     console.log(`[db] ${dbFile}`);

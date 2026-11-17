@@ -56,19 +56,20 @@
 .hero__dot:nth-child(2) { left: 196px; }
 .hero__dot:nth-child(3) { left: 220px; }
 
-/* 深色带（优秀员工 / 员工之声）：卡片与带顶齐平（ref01：带顶=卡顶 y336）；
-   min-height 撑满视口使页面始终贴底 */
+/* 深色带（优秀员工 / 员工之声）：卡片与带顶齐平（ref01：带顶=卡顶 y336）。
+   高度只由卡片决定（参考：带高 180 = 卡片 178 + 2），不再用 min-height 撑满视口——
+   否则高视口（1920×1080）下卡片下方会出现数百像素深色空块，与参考版式不符；
+   视口更高时露出的是 body 背景（同为 #201E1E 深色，视觉无缝）。 */
 .dark-band {
   background: var(--c-bg-dark);
-  padding: 0 0 var(--sp-6);
+  padding: 0 0 16px;
   position: relative;
-  min-height: calc(100vh - var(--nav-h-l1) - var(--nav-h-l2) - 336px);
 }
 
 /* 卡片下方极淡的轮播刻度行：照片裁切+亮度键控（v10 几何：y521–538 x113–335） */
 .band-ticks {
   position: absolute;
-  left: 113px;
+  left: calc(50% - 640px + 113px);
   top: 185px;
   width: 222px;
   height: 17px;
@@ -81,6 +82,9 @@
 .band-grid {
   display: flex;
   gap: 59px;
+  /* 与 .hero__unit 同一 1280 画布：宽视口下必须一起居中，否则卡片与烘焙图错位 */
+  max-width: 1280px;
+  margin: 0 auto;
   padding-left: 178px;
 }
 

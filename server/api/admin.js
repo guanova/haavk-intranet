@@ -469,6 +469,7 @@ export function listAiOfficers(ctx) {
       departmentName: o.department_name || "",
       persona: o.persona,
       voiceLines: safeArray(o.voice_lines),
+      postTopics: safeArray(o.post_topics),
       authorityLevel: o.authority_level,
       canReviewMentions: !!o.can_review_mentions,
       autoPostIntervalSec: o.auto_post_interval_sec,
@@ -514,7 +515,16 @@ export async function updateAiOfficer(ctx) {
     if (!lines.length) throw AppError.badRequest("至少保留一条发言素材", { fields: { voice_lines: "不能为空" } });
     patch.voice_lines = JSON.stringify(lines);
   }
-  if (body.title !== undefined) patch.title = String(body.title).slice(0, 32);
+    if (body.post_topics !== undefined) {
+    if (!Array.isArray(body.post_topics)) throw AppError.badRequest("自主选题必须为数组", { fields: { post_topics: "格式不正确" } });
+    const topics = body.post_topics
+      .map((x) => String(x || "").trim())
+      .filter(Boolean)
+      .slice(0, 20)
+      .map((x) => x.slice(0, 200));
+    patch.post_topics = JSON.stringify(topics);
+  }
+if (body.title !== undefined) patch.title = String(body.title).slice(0, 32);
 
   const keys = Object.keys(patch);
   if (!keys.length) throw AppError.badRequest("没有需要更新的字段");
