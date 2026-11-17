@@ -1,0 +1,156 @@
+/* ==========================================================================
+   base.css — reset / 字体 / 通用排版
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.7;
+  color: var(--c-text);
+  background: var(--c-bg-light);
+  /* 固定 1280 画布：整站按 1280 逐像素复刻游戏参考图，低于 1280 的桌面窗口
+     出横向滚动条（画布永不挤压变形）；手机由 viewport width=1280 自动缩放适配 */
+  min-width: 1280px;
+  /* 战术门户：全站 0 圆角、无投影 */
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: var(--c-brand);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  border-radius: 0;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+/* 键盘可达性：焦点描边使用品牌蓝 */
+:focus-visible {
+  outline: 2px solid var(--c-brand);
+  outline-offset: 2px;
+}
+
+/* 滚动条：细、深灰，贴合截图 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #b9bec4 transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #b9bec4;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 工具类 */
+.u-hidden {
+  display: none !important;
+}
+
+.u-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.u-num {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+}
+
+.u-muted {
+  color: var(--c-text-mute);
+}
+
+.u-strong {
+  font-weight: 700;
+}
+
+/* 需要标注"待确认"的语义化标记 */
+.u-pending {
+  color: var(--c-text-mute);
+}
+
+.u-pending::after {
+  content: "待确认";
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 5px;
+  font-size: 11px;
+  line-height: 16px;
+  color: #8a6d00;
+  background: var(--c-warn-bg);
+  border: 1px solid var(--c-warn-line);
+  vertical-align: 1px;
+}
+
+.u-single-src::after {
+  content: "*";
+  color: var(--c-brand-deep);
+}

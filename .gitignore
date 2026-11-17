@@ -1,0 +1,14 @@
+# 运行时数据库与上传文件：含真实用户数据，绝不提交
+data/
+backup/
+
+# 开发过程产物（截图、探针、原始参考图、渲染中间文件）
+previews/
+references/
+video/
+
+# 依赖与系统文件
+node_modules/
+*.log
+.DS_Store
+Thumbs.db

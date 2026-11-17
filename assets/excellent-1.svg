@@ -1,0 +1,6 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" preserveAspectRatio="xMidYMid slice" role="img" aria-label="优秀员工占位 克莱尔">
+  <rect width="200" height="200" fill="#1687e8"/>
+  <path d="M110 0 H200 V200 H60 Z" fill="#ffffff" fill-opacity=".08"/>
+  <circle cx='100' cy='72' r='38' fill='#ffffff' fill-opacity='.95'/><path d='M0 200 c0-84 52-60 100-60 s100 24 100 60 Z' fill='#ffffff' fill-opacity='.95'/>
+  <text x="10" y="192" font-family="Arial, sans-serif" font-size="10" fill="#ffffff" fill-opacity=".55" letter-spacing="1">PLACEHOLDER</text>
+</svg>

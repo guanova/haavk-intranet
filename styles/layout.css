@@ -1,0 +1,299 @@
+/* ==========================================================================
+   layout.css — 页面骨架：L1 活动条 / L2 主导航 / 内容栅格 / 书签条 / 页脚
+   ========================================================================== */
+
+/* ---------- 页面根 ---------- */
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--c-bg-light);
+}
+
+.shell {
+  width: 100%;
+  max-width: var(--layout-w);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+/* ---------- L1「◀ 活动」条 ---------- */
+/* 顶栏全透明浮在主视觉上（参考：无独立底色），需高于 .hero 保持可点 */
+.topbar {
+  height: var(--nav-h-l1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  position: relative;
+  z-index: 30;
+}
+
+.topbar__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #30333a;         /* 参考「活动」墨迹色 */
+  letter-spacing: 0.04em;
+  padding-top: 5px;       /* 参考墨迹 y16–36，比几何居中低 4-5px */
+}
+
+.topbar__back .icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* 参考：chevron 与「活动」之间一条 8-10px 浅灰细分隔线 */
+.topbar__sep {
+  width: 1px;
+  height: 10px;
+  background: #c9cdd4;
+  margin: 0 8px 0 10px;
+}
+
+.topbar__back > span {
+  line-height: 1.1;
+}
+
+.topbar__deco {
+  width: 66px;
+  height: 10px;
+  background-image: repeating-linear-gradient(
+    115deg,
+    rgba(0, 0, 0, 0.18) 0 1px,
+    transparent 1px 4px
+  );
+}
+
+/* ---------- L2 主导航 ---------- */
+/* 全透明浮在主视觉上、无分隔线（参考 ref01–03） */
+.mainnav {
+  height: var(--nav-h-l2);
+  display: flex;
+  align-items: center;
+  background: transparent;
+  position: relative;
+  z-index: 30;
+}
+
+.mainnav__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--c-text-strong);
+}
+
+/* 参考 logo 墨迹 x75–169（略溢出 78px 左边距） */
+.mainnav__logo img {
+  width: 96px;
+  height: auto;
+  margin-left: -4px;
+}
+
+/* 参考：菜单左起 x250（logo 右 83px），项间距 82px，不再居中分配 */
+.mainnav__menu {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 86px;           /* 参考项距 pitch ≈152px（15px 字 + 86 间隙） */
+  flex: 0 0 auto;
+  min-width: 0;
+  margin: 0 0 0 83px;
+}
+
+.mainnav__item {
+  font-size: 15px;     /* 参考导航墨迹高 13-14px */
+  font-weight: 500;
+  color: #383b42;      /* 参考菜单深灰蓝，非纯黑 */
+  letter-spacing: 0.06em;
+  padding: 4px 0;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+
+.mainnav__item:focus {
+  outline: none;
+}
+
+.mainnav__item:focus-visible {
+  outline: 2px solid var(--c-brand);
+  outline-offset: 2px;
+}
+
+.mainnav__item:hover {
+  color: var(--c-brand-deep);
+  text-decoration: none;
+}
+
+.mainnav__item.is-active {
+  color: #41648f;      /* 参考当前项暗宝蓝，非亮青蓝 */
+  font-weight: 600;
+}
+
+.mainnav__right {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex: 0 0 auto;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.attention {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--c-text-strong);
+}
+
+.attention__icon {
+  width: 18px;
+  height: 18px;
+}
+
+.attention__label {
+  font-weight: 500;
+}
+
+.attention__sep {
+  color: var(--c-text-mute);
+  margin: 0 2px;
+}
+
+.attention__value {
+  font-family: var(--font-num);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+/* 用户胶囊 */
+.navuser {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-left: var(--sp-4);
+  padding-left: var(--sp-4);
+  border-left: 1px solid var(--c-line);
+}
+
+.navuser__avatar {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border: 1px solid var(--c-line);
+}
+
+.navuser__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-text-strong);
+  max-width: 96px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 首页 L1 右上装饰已烘焙在主视觉图内，隐藏 DOM 版避免双份 */
+#app:has(.about) .topbar__deco {
+  display: none;
+}
+
+/* 首页整行导航（L1 返回、L2 logo/菜单/右侧簇）均烘焙在主视觉图内：
+   DOM 版整体透明只保留点击热区，杜绝重影/接缝/色差（v8 验收决策） */
+#app:has(.about) .topbar__back,
+#app:has(.about) .mainnav__logo,
+#app:has(.about) .mainnav__menu,
+#app:has(.about) .mainnav__right {
+  opacity: 0;
+}
+
+/* ---------- 内容栅格 ---------- */
+.content {
+  flex: 1 0 auto;
+  padding-bottom: var(--sp-8);
+}
+
+.layout-2col {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  gap: var(--sidebar-gap);
+  align-items: start;
+}
+
+.layout-2col--top {
+  padding-top: 4px; /* 参考：导航 92px + 4px 间隙 = 内容区自 y96 起 */
+}
+
+/* ---------- 页脚 ----------
+ * 仅承载备案信息（管理员在站点配置维护）。备案为空时整条隐藏，
+ * 页面底部没有任何常驻元素（用户指令：删除终端状态簇与常驻底栏）。 */
+.statusbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 70;
+  background: #e3e7ea;
+  color: #4a4f56;
+  height: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.statusbar--empty {
+  display: none;
+}
+
+#app:has(.about) .statusbar {
+  background: var(--c-bg-dark);
+  color: var(--c-text-on-dark-sub);
+}
+
+.statusbar .shell {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-5);
+}
+
+.statusbar__uid {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  font-family: var(--font-num);
+  line-height: 1;
+}
+
+.statusbar__spacer {
+  margin-left: auto;
+}
+
+/* ---------- 通用区块标题 ---------- */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  color: var(--c-text-strong);
+  letter-spacing: 0.04em;
+}
+
+.section-title::before {
+  content: "";
+  width: 4px;
+  height: 16px;
+  background: var(--c-brand);
+}
+
+.section-title--on-dark {
+  color: #fff;
+}
+
+/* ---------- 响应式：1024 以下侧栏折叠为顶部块 ---------- */
+/* [fixed-canvas] 已废除窄屏媒体查询 @media max-width: 1080px) */
+
+
+/* [fixed-canvas] 已废除窄屏媒体查询 @media max-width: 860px) */
+

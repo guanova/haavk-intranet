@@ -1,0 +1,6 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 176 176" width="176" height="176" preserveAspectRatio="xMidYMid slice" role="img" aria-label="商品占位图">
+  <rect width="176" height="176" fill="#e4e6e9"/>
+  <path d="M97 0 H176 V176 H53 Z" fill="#ffffff" fill-opacity=".08"/>
+  <circle cx='88' cy='88' r='53' fill='none' stroke='#9aa0a6' stroke-width='10' stroke-opacity='.9'/><rect x='39' y='77' width='99' height='21' fill='#9aa0a6' fill-opacity='.9'/><circle cx='88' cy='88' r='21' fill='#9aa0a6' fill-opacity='.9'/>
+  
+</svg>

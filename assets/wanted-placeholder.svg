@@ -1,0 +1,6 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 420" width="560" height="420" preserveAspectRatio="xMidYMid slice" role="img" aria-label="寻人启事占位图">
+  <rect width="560" height="420" fill="#1d3a55"/>
+  <path d="M308 0 H560 V420 H168 Z" fill="#ffffff" fill-opacity=".08"/>
+  <circle cx='280' cy='151' r='106' fill='#5d6b78' fill-opacity='.95'/><path d='M0 420 c0-176 146-126 280-126 s280 50 280 126 Z' fill='#5d6b78' fill-opacity='.95'/>
+  <text x="10" y="412" font-family="Arial, sans-serif" font-size="10" fill="#ffffff" fill-opacity=".55" letter-spacing="1">PLACEHOLDER</text>
+</svg>

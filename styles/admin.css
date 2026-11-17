@@ -1,0 +1,677 @@
+/* ==========================================================================
+   admin.css — 管理面板（#/admin）专属样式
+   设计约束：0 圆角、无投影；配色 / 字号 / 间距全部取自 tokens.css
+   依赖的通用 class（.panel .btn .input .forum-table__head .forum-row .tag
+   .state .skeleton-row .mini-note .field）在 components.css 中定义。
+   ========================================================================== */
+
+/* ============================ 外层布局 ============================ */
+
+.admin-root {
+  padding-top: var(--sp-6);
+}
+
+.admin-guard {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ---------- 顶部：管理员身份 + 操作 ---------- */
+
+.admin-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  padding-bottom: var(--sp-3);
+  border-bottom: 2px solid var(--c-text-strong);
+}
+
+.admin-top__title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-size: var(--fs-h1);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  color: var(--c-text-strong);
+}
+
+.admin-top__title span {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  color: var(--c-text-mute);
+}
+
+.admin-top__who {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--c-text-sub);
+}
+
+.admin-top__who b {
+  font-weight: 700;
+  color: var(--c-text-strong);
+}
+
+.admin-top__ops {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+/* ---------- 两栏：左侧纵向导航 + 右侧内容 ---------- */
+
+.admin-main {
+  display: grid;
+  grid-template-columns: 224px 1fr;
+  gap: var(--sp-5);
+  align-items: start;
+  margin-top: var(--sp-5);
+}
+
+.admin-side {
+  background: var(--c-panel);
+  border: 1px solid var(--c-line-soft);
+  position: sticky;
+  top: var(--sp-3);
+}
+
+.admin-side__cap {
+  padding: 10px 14px;
+  background: #fff;
+  color: var(--c-text);
+  font-size: var(--fs-th);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  border-bottom: 3px solid var(--c-th-line);
+}
+
+.admin-side__item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  padding: 11px 14px;
+  background: #fff;
+  border: none;
+  border-bottom: 1px solid var(--c-line-soft);
+  border-left: 3px solid transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.12s, border-color 0.12s;
+}
+
+.admin-side__item:last-of-type {
+  border-bottom: none;
+}
+
+.admin-side__item:hover {
+  background: var(--c-row-hover);
+}
+
+.admin-side__item.is-active {
+  background: var(--c-brand-soft);
+  border-left-color: var(--c-brand);
+}
+
+.admin-side__icon {
+  flex: 0 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-text-sub);
+}
+
+.admin-side__item.is-active .admin-side__icon {
+  color: var(--c-brand-deep);
+}
+
+.admin-side__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.admin-side__label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-text-strong);
+  letter-spacing: 0.02em;
+}
+
+.admin-side__item.is-active .admin-side__label {
+  color: var(--c-brand-deep);
+}
+
+.admin-side__sub {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--c-text-mute);
+}
+
+.admin-side__note {
+  padding: 10px 14px;
+  border-top: 1px solid var(--c-line-soft);
+  background: var(--c-bg-light);
+  line-height: 1.6;
+}
+
+.admin-content {
+  min-width: 0;
+}
+
+/* ============================ 面板容器 ============================ */
+
+.admin-panel {
+  margin-bottom: var(--sp-5);
+}
+
+.admin-panel__head {
+  padding-bottom: 0;
+}
+
+.admin-panel__body {
+  padding: var(--sp-4) 20px 20px;
+}
+
+.admin-sub {
+  margin-top: var(--sp-5);
+  border: 1px solid var(--c-line-soft);
+  background: #fff;
+}
+
+/* 面板顶部工具条：筛选 / 搜索 / 说明 */
+.admin-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  padding: 12px 20px;
+  background: var(--c-bg-light);
+  border-bottom: 1px solid var(--c-line-soft);
+}
+
+.admin-filters {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.admin-filters__label {
+  font-size: 12px;
+  color: var(--c-text-mute);
+  letter-spacing: 0.08em;
+}
+
+.admin-filters__spacer {
+  margin-left: auto;
+}
+
+.admin-chip {
+  height: 28px;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--c-text-sub);
+  background: #fff;
+  border: 1px solid var(--c-line);
+  cursor: pointer;
+  transition: background-color 0.12s, color 0.12s, border-color 0.12s;
+}
+
+.admin-chip:hover {
+  border-color: var(--c-brand);
+  color: var(--c-brand-deep);
+}
+
+.admin-chip.is-active {
+  background: var(--c-brand);
+  border-color: var(--c-brand);
+  color: #fff;
+}
+
+.admin-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: 260px;
+  max-width: 100%;
+  padding: 0 10px;
+  background: #fff;
+  border: 1px solid var(--c-line);
+  color: var(--c-text-mute);
+}
+
+.admin-search:focus-within {
+  border-color: var(--c-brand);
+}
+
+.admin-search .input {
+  min-height: 34px;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.admin-search .input:focus {
+  box-shadow: none;
+}
+
+.admin-select {
+  width: 160px;
+  min-height: 34px;
+  padding: 4px 32px 4px 12px;
+  background-position: calc(100% - 16px) 15px, calc(100% - 11px) 15px;
+}
+
+/* ============================ 概览 ============================ */
+
+.admin-recon {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 12px 16px;
+  margin-bottom: var(--sp-4);
+  font-size: 13px;
+  border: 1px solid var(--c-line);
+  border-left-width: 4px;
+  background: #fff;
+}
+
+.admin-recon b {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.admin-recon span {
+  color: var(--c-text-sub);
+}
+
+.admin-recon--ok {
+  border-left-color: #2fbf71;
+  background: rgba(47, 191, 113, 0.08);
+  color: #14713f;
+}
+
+.admin-recon--bad {
+  border-color: var(--c-accent-red);
+  border-left-color: var(--c-accent-red);
+  background: rgba(198, 40, 40, 0.09);
+  color: var(--c-accent-red);
+}
+
+/* 固定 5 列 + 透明 gap：12 张卡最后一行只坐 2 张时，空位不再露出深色网格底 */
+.admin-counts {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  background: transparent;
+  border: 0;
+}
+
+.admin-count {
+  position: relative;
+  padding: 14px 16px 16px;
+  background: #fff;
+  border: 1px solid var(--c-line-soft);
+}
+
+/* 管理表格无行首复选框：表头首格回收论坛表格的 66px 复选框留白 */
+.admin-table .forum-table__head > *:first-child {
+  padding-left: 12px;
+}
+
+/* 论坛表头第 3/4 列（回复/最后回复）的居中规则对管理表无意义：
+   管理表数据单元格一律左对齐，表头随之左对齐，避免表头居中、数据靠左的错位观感 */
+.admin-table .forum-table__head > *:nth-child(3),
+.admin-table .forum-table__head > *:nth-child(4) {
+  text-align: left;
+}
+
+.admin-count--ledger {
+  background: var(--c-bg-light);
+}
+
+.admin-count__icon {
+  color: var(--c-line);
+  margin-bottom: 6px;
+}
+
+.admin-count__label {
+  font-size: 12px;
+  color: var(--c-text-mute);
+  letter-spacing: 0.04em;
+}
+
+.admin-count__value {
+  margin-top: 2px;
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1.2;
+  color: var(--c-text-strong);
+  word-break: break-all;
+}
+
+.admin-count--ledger .admin-count__value {
+  color: var(--c-brand-deep);
+}
+
+/* ============================ 表格 ============================ */
+
+/* 用容器查询值控制最小宽度：窄屏可横向滚动，不挤压列 */
+.admin-table {
+  --min-w: 1000px;
+  background: #fff;
+  border: 1px solid var(--c-line-soft);
+  overflow-x: auto;
+}
+
+.admin-table > .forum-table__head,
+.admin-table > .admin-row {
+  min-width: var(--min-w);
+}
+
+.admin-row {
+  min-height: 58px;
+}
+
+.admin-cell {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--c-text);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 允许换行的单元格：按词断行，避免逐字换行 */
+.admin-cell--wrap {
+  white-space: normal;
+  line-height: 1.6;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: none;
+}
+
+.admin-cell--mute {
+  color: var(--c-text-mute);
+  font-size: 12px;
+}
+
+.admin-cell--num {
+  text-align: right;
+  font-weight: 700;
+  color: var(--c-text-strong);
+}
+
+.admin-cell--code {
+  font-family: var(--font-num);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+.admin-cell .mini-note {
+  margin-top: 2px;
+}
+
+/* 操作列：固定宽度，按钮不换行 */
+.admin-ops {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.admin-ops .btn {
+  flex: 0 0 auto;
+}
+
+.admin-ops .mini-note {
+  line-height: 1.5;
+  white-space: normal;
+}
+
+.admin-table__note {
+  margin-top: var(--sp-3);
+  line-height: 1.6;
+}
+
+/* ============================ 站点配置表单 ============================ */
+
+.admin-form {
+  display: block;
+}
+
+.admin-group {
+  margin: 0 0 var(--sp-5);
+  padding: var(--sp-4);
+  border: 1px solid var(--c-line-soft);
+  background: #fff;
+}
+
+.admin-group__title {
+  padding: 0 8px;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: var(--c-text-strong);
+}
+
+.admin-group__desc {
+  margin-bottom: var(--sp-4);
+  line-height: 1.6;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0 var(--sp-4);
+}
+
+.field-grid--3 {
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+}
+
+.admin-field {
+  margin-bottom: var(--sp-3);
+}
+
+.admin-field .field__hint {
+  line-height: 1.6;
+}
+
+.admin-field .input.is-dirty {
+  border-color: var(--c-brand);
+  background: rgba(30, 155, 240, 0.06);
+}
+
+.admin-form__foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  padding-top: var(--sp-4);
+  border-top: 2px solid var(--c-text-strong);
+}
+
+.admin-form__foot .mini-note {
+  margin-right: auto;
+}
+
+/* ============================ AI 高管卡片 ============================ */
+
+.admin-officers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: var(--sp-4);
+}
+
+.admin-officer {
+  background: #fff;
+  border: 1px solid var(--c-line);
+}
+
+.admin-officer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  background: #fff;
+  color: var(--c-text);
+  border-bottom: 3px solid var(--c-th-line);
+}
+
+.admin-officer__name {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.admin-officer__title {
+  font-size: 12px;
+  font-weight: 400;
+  color: #cfd4d8;
+}
+
+.admin-officer__tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.admin-officer__tags .tag {
+  background: transparent;
+}
+
+.admin-officer__body {
+  padding: var(--sp-4) 16px 0;
+}
+
+.admin-officer__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-3) 16px;
+  border-top: 1px solid var(--c-line-soft);
+  background: var(--c-bg-light);
+}
+
+.admin-switches {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 0;
+}
+
+.admin-textarea {
+  min-height: 84px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* 弹窗内的正文 */
+.admin-modal-text {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--c-text-sub);
+}
+
+/* 资料征集：WebDAV 转存状态条 + 附件缩略图 */
+.admin-webdav {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  background: var(--c-bg-light);
+  border-left: 3px solid var(--c-th-line);
+}
+
+.admin-webdav__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-text-strong);
+  white-space: nowrap;
+}
+
+.admin-webdav .mini-note b {
+  color: var(--c-text-strong);
+}
+
+.sub-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sub-thumb {
+  position: relative;
+  display: block;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--c-line-soft);
+  overflow: hidden;
+}
+
+.sub-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sub-thumb__badge {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 14px;
+  height: 14px;
+  font-style: normal;
+  font-size: 10px;
+  line-height: 14px;
+  text-align: center;
+  color: #fff;
+}
+
+.sub-thumb__badge.is-done {
+  background: var(--c-brand);
+}
+
+.sub-thumb__badge.is-failed {
+  background: var(--c-danger);
+}
+
+/* ============================ 响应式 ============================ */
+
+/* [fixed-canvas] 已废除窄屏媒体查询 @media max-width: 1080px) */
+
+
+/* [fixed-canvas] 已废除窄屏媒体查询 @media max-width: 640px) */
+

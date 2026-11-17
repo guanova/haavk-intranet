@@ -1,0 +1,6 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 200" width="180" height="200" preserveAspectRatio="xMidYMid slice" role="img" aria-label="员工之声占位 3">
+  <rect width="180" height="200" fill="#2b2929"/>
+  <path d="M99 0 H180 V200 H54 Z" fill="#ffffff" fill-opacity=".08"/>
+  <circle cx='90' cy='72' r='34' fill='#8d9297' fill-opacity='.95'/><path d='M0 200 c0-84 47-60 90-60 s90 24 90 60 Z' fill='#8d9297' fill-opacity='.95'/>
+  <text x="10" y="192" font-family="Arial, sans-serif" font-size="10" fill="#ffffff" fill-opacity=".55" letter-spacing="1">PLACEHOLDER</text>
+</svg>

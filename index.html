@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>哈夫克集团 · 员工门户</title>
+<meta name="description" content="哈夫克集团员工门户：集团公告、员工论坛、解决方案与寻人启事。">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="assets/haavk-logo.svg" type="image/svg+xml">
+<!-- 设计令牌在最前，后续样式全部依赖它 -->
+<link rel="stylesheet" href="styles/tokens.css?v=20261116c">
+<link rel="stylesheet" href="styles/base.css?v=20261116c">
+<link rel="stylesheet" href="styles/layout.css?v=20261116c">
+<link rel="stylesheet" href="styles/components.css?v=20261116c">
+<link rel="stylesheet" href="styles/views.css?v=20261116c">
+<link rel="stylesheet" href="styles/post-detail.css?v=20261116c">
+<link rel="stylesheet" href="styles/admin.css?v=20261116c">
+</head>
+<body>
+
+<!-- 内联 SVG 图标精灵（加载成功前隐藏，避免出现空占位块） -->
+<div id="icon-sprite" style="display:none" aria-hidden="true"></div>
+
+<!-- 应用挂载点 -->
+<div id="app">
+  <noscript>
+    <div style="padding:40px;font-family:sans-serif">
+      <h1>需要启用 JavaScript</h1>
+      <p>本站为单页应用，请启用 JavaScript 后刷新页面。</p>
+    </div>
+  </noscript>
+</div>
+
+<!-- ========== 基础工具 ========== -->
+<script src="js/core/util.js?v=20261116c"></script>
+<script src="js/core/persist.js?v=20261116c"></script>
+<script src="js/core/api.js?v=20261116c"></script>
+<script src="js/core/store.js?v=20261116c"></script>
+<script src="js/core/auth.js?v=20261116c"></script>
+<script src="js/core/router.js?v=20261116c"></script>
+
+<!-- ========== 领域服务（全部经由服务端接口） ========== -->
+<script src="js/services/db.js?v=20261116c"></script>
+
+<!-- ========== 通用组件 ========== -->
+<script src="js/components/ui.js?v=20261116c"></script>
+<script src="js/components/shell.js?v=20261116c"></script>
+
+<!-- ========== 视图 ========== -->
+<script src="js/views/about.js?v=20261116c"></script>
+<script src="js/views/forum.js?v=20261116c"></script>
+<script src="js/views/post-detail.js?v=20261116c"></script>
+<script src="js/views/compose.js?v=20261116c"></script>
+<script src="js/views/profile.js?v=20261116c"></script>
+<script src="js/views/onboarding.js?v=20261116c"></script>
+<script src="js/views/login.js?v=20261116c"></script>
+<script src="js/views/register.js?v=20261116c"></script>
+<script src="js/views/solutions.js?v=20261116c"></script>
+<script src="js/views/wanted.js?v=20261116c"></script>
+<script src="js/views/collect.js?v=20261116c"></script>
+<script src="js/views/admin.js?v=20261116c"></script>
+<script src="js/views/not-found.js?v=20261116c"></script>
+
+<!-- ========== 启动 ========== -->
+<script src="js/app.js?v=20261116c"></script>
+
+<script>
+/* 注入 SVG 图标精灵 */
+(function () {
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "assets/icons.svg", true);
+  xhr.onload = function () {
+    if (xhr.status === 200 || xhr.status === 0) {
+      var host = document.getElementById("icon-sprite");
+      /* 整份替换（含 <svg> 外壳）：innerHTML 剥壳会让 symbol 落入 HTML 命名空间而全站图标隐形 */
+      host.outerHTML = xhr.responseText;
+    }
+  };
+  xhr.onerror = function () { /* 图标缺失不影响功能 */ };
+  try { xhr.send(); } catch (e) { /* ignore */ }
+})();
+</script>
+</body>
+</html>

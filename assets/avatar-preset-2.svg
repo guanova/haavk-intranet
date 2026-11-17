@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="预置头像 深色剪影">
+  <rect width="256" height="256" fill="#2b2929"/>
+  <circle cx="128" cy="100" r="40" fill="#6f7378"/>
+  <path d="M40 256c0-48 40-78 88-78s88 30 88 78z" fill="#6f7378"/>
+  <g fill="none" stroke="#c62828" stroke-width="3">
+    <path d="M78 34v-18M128 30v-18M178 34v-18"/>
+  </g>
+</svg>

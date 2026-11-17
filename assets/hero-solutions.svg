@@ -1,0 +1,6 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 200" width="900" height="200" preserveAspectRatio="xMidYMid slice" role="img" aria-label="解决方案轮播占位图">
+  <rect width="900" height="200" fill="#33383d"/>
+  <path d="M495 0 H900 V200 H270 Z" fill="#ffffff" fill-opacity=".08"/>
+  <circle cx='450' cy='100' r='270' fill='none' stroke='#6d757c' stroke-width='10' stroke-opacity='.9'/><rect x='198' y='88' width='504' height='24' fill='#6d757c' fill-opacity='.9'/><circle cx='450' cy='100' r='108' fill='#6d757c' fill-opacity='.9'/>
+  
+</svg>

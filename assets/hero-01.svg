@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 400" width="620" height="400" preserveAspectRatio="xMidYMid slice" role="img" aria-label="主视觉占位图 一">
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f2f3f4"/>
+      <stop offset="1" stop-color="#d6dade"/>
+    </linearGradient>
+    <linearGradient id="g1b" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3b4147"/>
+      <stop offset="1" stop-color="#1b1d20"/>
+    </linearGradient>
+  </defs>
+  <rect width="620" height="400" fill="url(#g1)"/>
+  <!-- 蓝色斜切块（截图核心图形语言） -->
+  <path d="M300 0 H620 V400 H210 Z" fill="#1e9bf0" fill-opacity=".9"/>
+  <path d="M330 0 H620 V400 H260 Z" fill="#ffffff" fill-opacity=".12"/>
+  <!-- 人物剪影占位：深色外套 + 头部轮廓 -->
+  <g fill="url(#g1b)">
+    <path d="M360 400c0-96 52-150 118-150s112 46 130 150z"/>
+    <circle cx="470" cy="150" r="66"/>
+  </g>
+  <g fill="#ffffff" fill-opacity=".10">
+    <path d="M0 320h620v80H0z"/>
+  </g>
+  <text x="24" y="382" font-family="Arial, sans-serif" font-size="13" fill="#8a8f94" letter-spacing="2">PLACEHOLDER / HERO-01 — 请替换为自有美术素材</text>
+</svg>
