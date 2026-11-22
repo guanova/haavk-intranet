@@ -1204,3 +1204,124 @@
   color: var(--c-text-strong);
   line-height: 1;
 }
+
+/* ============================ 通知板块 ============================ */
+.notice-page {
+  align-items: start;
+}
+
+.notice-main {
+  min-height: 320px;
+}
+
+.notice-item {
+  padding: 16px 0 15px;
+  border-bottom: 1px solid var(--c-line-soft);
+}
+
+.notice-item:last-child {
+  border-bottom: 0;
+}
+
+.notice-item__head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.notice-item__pin {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1e6fd9;
+  letter-spacing: 0.04em;
+}
+
+.notice-item__pin .icon {
+  width: 12px;
+  height: 12px;
+}
+
+.notice-item__level {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+  border: 1px solid #d5dae2;
+  padding: 1px 5px;
+  line-height: 14px;
+}
+
+.notice-item--important .notice-item__level {
+  color: #b45309;
+  border-color: #eccb9a;
+  background: #fdf6ec;
+}
+
+.notice-item--urgent .notice-item__level {
+  color: #b91c1c;
+  border-color: #f0b4b4;
+  background: #fdf2f2;
+}
+
+.notice-item__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--c-text-strong);
+  line-height: 22px;
+}
+
+.notice-item__meta {
+  display: flex;
+  gap: 14px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--c-text-mute);
+}
+
+.notice-item__summary {
+  margin: 9px 0 0;
+  font-size: 13px;
+  line-height: 21px;
+  color: var(--c-text);
+}
+
+.notice-item__body {
+  margin: 10px 0 0;
+  padding: 12px 14px;
+  background: #f6f8fa;
+  border-left: 3px solid var(--c-brand);
+  font-size: 13px;
+  line-height: 22px;
+  color: var(--c-text);
+}
+
+.notice-item__body p {
+  margin: 0 0 10px;
+}
+
+.notice-item__body p:last-child {
+  margin-bottom: 0;
+}
+
+.notice-item__toggle {
+  margin-top: 10px;
+  height: 26px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.notice-empty {
+  padding: 36px 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--c-text-mute);
+}
+
+.notice-empty--error {
+  color: #b91c1c;
+}

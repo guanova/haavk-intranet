@@ -122,7 +122,16 @@ export const SETTING_DEFAULTS = Object.freeze([
   { key: "webdav.enabled", value: "0", label: "启用 WebDAV 转存", hint: "开启后投稿附件自动转存到 WebDAV", group: "webdav", editable: 1 },
   { key: "webdav.url", value: "", label: "WebDAV 地址", hint: "目录级地址，例如 https://dav.example.com/dav/haavk/", group: "webdav", editable: 1 },
   { key: "webdav.user", value: "", label: "WebDAV 用户名", hint: "", group: "webdav", editable: 1 },
-  { key: "webdav.pass", value: "", label: "WebDAV 密码", hint: "仅服务端使用，不会下发到页面", group: "webdav", editable: 1 }
+  { key: "webdav.pass", value: "", label: "WebDAV 密码", hint: "仅服务端使用，不会下发到页面", group: "webdav", editable: 1 },
+  // —— 邮件推送（SMTP）——
+  { key: "mail.enabled", value: "0", label: "启用邮件通知", hint: "开启后发布通知可一键推送到订阅邮箱", group: "mail", editable: 1 },
+  { key: "mail.host", value: "", label: "SMTP 服务器", hint: "例如 smtp.qq.com / smtp.163.com", group: "mail", editable: 1 },
+  { key: "mail.port", value: "465", label: "SMTP 端口", hint: "465 为加密直连，587 为 STARTTLS", group: "mail", editable: 1 },
+  { key: "mail.secure", value: "1", label: "使用加密连接", hint: "1 开启（推荐）／0 明文", group: "mail", editable: 1 },
+  { key: "mail.user", value: "", label: "SMTP 账号", hint: "通常是完整邮箱地址", group: "mail", editable: 1 },
+  { key: "mail.pass", value: "", label: "SMTP 密码／授权码", hint: "仅服务端使用，不会下发到页面", group: "mail", editable: 1 },
+  { key: "mail.from", value: "", label: "发件人地址", hint: "留空则使用 SMTP 账号；可写成 名称 <a@b.c>", group: "mail", editable: 1 },
+  { key: "mail.site_url", value: "", label: "站点访问地址", hint: "邮件正文里的回链前缀，例如 http://154.89.149.92", group: "mail", editable: 1 }
 ]);
 
 /** 内容质量与审核门槛（代码常量，不可通过面板修改） */

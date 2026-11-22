@@ -65,6 +65,29 @@
     rgba(0, 0, 0, 0.18) 0 1px,
     transparent 1px 4px
   );
+  margin-left: 16px;
+}
+
+/* L1 右上：集团通知入口（仅子页显示；首页整条 L1 均烘焙在主视觉图内） */
+.topbar__notice {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 600;
+  color: #5a606a;
+  letter-spacing: 0.06em;
+  padding-top: 5px;
+}
+
+.topbar__notice .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.topbar__notice:hover {
+  color: var(--c-brand);
 }
 
 /* ---------- L2 主导航 ---------- */
@@ -204,6 +227,7 @@
 /* 首页整行导航（L1 返回、L2 logo/菜单/右侧簇）均烘焙在主视觉图内：
    DOM 版整体透明只保留点击热区，杜绝重影/接缝/色差（v8 验收决策） */
 #app:has(.about) .topbar__back,
+#app:has(.about) .topbar__notice,
 #app:has(.about) .mainnav__logo,
 #app:has(.about) .mainnav__menu,
 #app:has(.about) .mainnav__right {

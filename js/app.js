@@ -66,6 +66,7 @@
       .add({ path: "/compose", view: NS.views.compose, title: "发布新帖", requireAuth: true, requireHired: true })
       .add({ path: "/solutions", view: NS.views.solutions, title: "解决方案" })
       .add({ path: "/collect", view: NS.views.collect, title: "资料征集" })
+      .add({ path: "/notifications", view: NS.views.notifications, title: "集团通知" })
       .add({ path: "/wanted", view: { render: function () { NS.router.go("/collect"); return ""; }, mount: function () {} }, title: "资料征集" })
       .add({ path: "/profile", view: NS.views.profile, title: "个人信息", requireAuth: true })
       .add({ path: "/onboarding", view: NS.views.onboarding, title: "办理入职手续", requireAuth: true })

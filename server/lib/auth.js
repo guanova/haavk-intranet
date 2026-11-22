@@ -8,6 +8,7 @@ import { AppError } from "./errors.js";
 import { ROLES, USER_STATUS, SESSION } from "../constants.js";
 import { clientIp, parseCookies } from "./http.js";
 import { hashPassword, verifyPassword, makeSalt, ALGO } from "./password.js";
+import { userByToken as agentUserByToken, AGENT_HEADER } from "./agent.js";
 
 const sha256 = (s) => crypto.createHash("sha256").update(String(s)).digest("hex");
 
@@ -29,6 +30,8 @@ export function publicUser(row, { uploadBase = "/media/avatars" } = {}) {
     jobRoleName: row.job_role_name || null,
     title: row.title || "",
     signature: row.signature || "",
+    email: row.email || "",
+    emailOpt: Boolean(row.email_opt),
     avatarUrl: row.avatar_stored ? `${uploadBase}/${row.avatar_stored}` : "/media/default-avatar.svg",
     isSystem: !!row.is_system,
     createdAt: row.created_at,
@@ -85,8 +88,7 @@ export function destroyAllSessions(userId) {
 export function currentUser(req) {
   const cookies = parseCookies(req);
   const token = cookies[SESSION.COOKIE];
-  if (!token) return null;
-  const row = get(
+  if (!token) return userByAgentToken(req);  const row = get(
     `SELECT s.id AS session_id, s.expires_at, s.revoked_at, u.id AS uid
        FROM sessions s JOIN users u ON u.id = s.user_id
       WHERE s.token_hash = ?`,
@@ -96,6 +98,18 @@ export function currentUser(req) {
   const user = findUserById(row.uid);
   if (!user || user.status === USER_STATUS.SUSPENDED) return null;
   return { ...user, session_id: row.session_id, session_token: token };
+}
+
+/**
+ * 令牌通道：请求头带 x-agent-token 时按令牌绑定的管理员身份放行。
+ * 与 Cookie 会话共用同一套 requireAuth / requireAdmin 守卫。
+ */
+export function userByAgentToken(req) {
+  const raw = req.headers[AGENT_HEADER];
+  if (!raw) return null;
+  const u = agentUserByToken(raw);
+  if (!u) return null;
+  return { ...findUserById(u.id), agent_token_id: u.agent_token_id, agent_scope: u.agent_scope };
 }
 
 /* ------------------------------ 鉴权守卫 ------------------------------ */

@@ -18,6 +18,7 @@ window.HAAVK = window.HAAVK || {};
     { id: "overview", label: "概览", icon: "hex", sub: "OVERVIEW" },
     { id: "requests", label: "入职审批", icon: "doc", sub: "REQUESTS" },
     { id: "submissions", label: "资料征集", icon: "gift", sub: "COLLECT" },
+    { id: "notifications", label: "通知", icon: "info", sub: "NOTICE" },
     { id: "settings", label: "站点配置", icon: "shield", sub: "SETTINGS" },
     { id: "users", label: "用户", icon: "user", sub: "USERS" },
     { id: "mentions", label: "＠审核", icon: "speaker", sub: "MENTIONS" },
@@ -62,7 +63,8 @@ window.HAAVK = window.HAAVK || {};
     brand: "品牌",
     points: "点数规则",
     mention: "@ 呼叫风控",
-    webdav: "WebDAV 转存"
+    webdav: "WebDAV 转存",
+    mail: "邮件推送（SMTP）"
   };
 
   var GROUP_DESC = {
@@ -70,7 +72,8 @@ window.HAAVK = window.HAAVK || {};
     brand: "站点名称，用于浏览器标题与导航。",
     points: "点数发放与消耗规则；数值型配置有服务端范围保护。",
     mention: "@ 呼叫的冷却、频次与职级门槛。",
-    webdav: "征集稿件图片的异地转存设置；base_url 示例 https://dav.example.com/dav/haavk。密码修改后只会写回配置，已入队文件沿用新配置重试。"
+    webdav: "征集稿件图片的异地转存设置；base_url 示例 https://dav.example.com/dav/haavk。密码修改后只会写回配置，已入队文件沿用新配置重试。",
+    mail: "发布通知时向订阅邮箱推送。QQ/163 邮箱请填「授权码」而非登录密码；端口 465 为加密直连（推荐），587 走 STARTTLS。填完点「通知」页的「测试连接」验证。"
   };
 
   var COUNT_CARDS = [
@@ -1125,12 +1128,190 @@ window.HAAVK = window.HAAVK || {};
     );
   }
 
+
+  /* ============================== 通知 ============================== */
+
+  var LEVEL_LABEL = { normal: "通知", important: "重要", urgent: "紧急" };
+  var MAIL_STATE_LABEL = { none: "未推送", sending: "推送中", sent: "已推送", failed: "推送失败" };
+
+  function renderNotifications() {
+    return block(
+      "notifications",
+      function (d) {
+        var items = d.items || [];
+        var mail = d.mail || {};
+        var cols = "1fr 90px 80px 110px 150px 210px";
+        var rows = items
+          .map(function (n) {
+            var badge =
+              n.status === "published"
+                ? '<span class="tag tag--ok">已发布</span>'
+                : '<span class="tag">草稿</span>';
+            var mailCell =
+              n.emailState && n.emailState !== "none"
+                ? '<span class="tag' +
+                  (n.emailState === "sent" ? " tag--ok" : "") +
+                  '">' +
+                  esc(MAIL_STATE_LABEL[n.emailState] || n.emailState) +
+                  "</span> " +
+                  '<span class="mini-note">' +
+                  (n.emailOk || 0) +
+                  "/" +
+                  (n.emailTotal || 0) +
+                  "</span>"
+                : '<span class="mini-note">—</span>';
+            var actions =
+              '<button type="button" class="btn btn--flat btn--sm" data-act="notice-edit" data-id="' + esc(n.id) + '">编辑</button>' +
+              (n.status === "published"
+                ? ""
+                : '<button type="button" class="btn btn--flat btn--sm" data-act="notice-publish" data-id="' + esc(n.id) + '">发布</button>') +
+              (n.emailState && n.emailState !== "none" && n.emailState !== "sending"
+                ? '<button type="button" class="btn btn--flat btn--sm" data-act="notice-mail-log" data-id="' + esc(n.id) + '">记录</button>'
+                : "") +
+              (n.status === "published" && mail.configured && mail.enabled
+                ? '<button type="button" class="btn btn--flat btn--sm" data-act="notice-push" data-id="' + esc(n.id) + '">推送</button>'
+                : "") +
+              '<button type="button" class="btn btn--flat btn--sm" data-act="notice-del" data-id="' + esc(n.id) + '">删除</button>';
+            return row(
+              cols,
+              cell(
+                "admin-cell admin-cell--wrap",
+                '<b>' +
+                  (n.isPinned ? '<span class="tag tag--pin">置顶</span> ' : "") +
+                  esc(n.title) +
+                  "</b>" +
+                  (n.summary ? '<div class="mini-note">' + esc(n.summary.slice(0, 70)) + "</div>" : "")
+              ) +
+                cell("admin-cell", badge) +
+                cell("admin-cell", '<span class="tag">' + esc(LEVEL_LABEL[n.level] || n.level) + "</span>") +
+                cell("admin-cell admin-cell--mute", esc(util.dateTime(n.publishAt || n.createdAt))) +
+                cell("admin-cell", mailCell) +
+                cell("admin-cell admin-ops", actions)
+            );
+          })
+          .join("");
+
+        var mailBanner =
+          '<div class="admin-mailbar">' +
+          '<span class="admin-mailbar__state">邮件服务：' +
+          (mail.enabled
+            ? mail.configured
+              ? '<b class="is-ok">已启用</b>'
+              : '<b class="is-warn">已启用但未配置完整</b>'
+            : '<b>未启用</b>') +
+          "</span>" +
+          '<span class="mini-note">订阅邮箱 ' + esc(mail.subscribers || 0) + " 个</span>" +
+          '<button type="button" class="btn btn--flat btn--sm" data-act="mail-test">测试连接</button>' +
+          '<a class="btn btn--flat btn--sm" href="#/admin?tab=settings">前往配置</a>' +
+          "</div>";
+
+        return (
+          titled("集团通知", "NOTIFICATIONS") +
+          '<div class="admin-panel__body">' +
+          mailBanner +
+          gridTable(
+            cols,
+            1080,
+            "<span>标题</span><span>状态</span><span>级别</span><span>发布时间</span><span>邮件</span><span>操作</span>",
+            rows
+          ) +
+          '<div class="mini-note admin-table__note">发布后员工可在「通知」中查看（须发布通知并明确要求推送邮件才会发信）。</div>' +
+          "</div>"
+        );
+      },
+      {
+        emptyText: "暂无通知，先新建一条",
+        emptyActionHtml: '<button type="button" class="btn btn--primary" data-act="notice-new">新建通知</button>',
+        isEmpty: function (d) {
+          return !(d.items && d.items.length);
+        },
+        toolbarHtml:
+          '<button type="button" class="btn btn--primary btn--sm" data-act="notice-new">新建通知</button>' +
+          '<span class="mini-note">通知同时作为站内公告与邮件推送的内容源</span>'
+      }
+    );
+  }
+
+  /** 新建 / 编辑通知弹窗 */
+  function askNotice(notice) {
+    var isNew = !notice;
+    var n = notice || { title: "", summary: "", body: "", level: "normal", isPinned: false };
+    var body =
+      '<div class="field admin-field"><label class="field__label" for="nt-title">标题<span class="req">*</span></label>' +
+      '<input class="input" id="nt-title" type="text" maxlength="120" value="' + esc(n.title) + '" autocomplete="off">' +
+      '<div class="field__error" id="nt-title-err"></div></div>' +
+      '<div class="field admin-field"><label class="field__label" for="nt-summary">列表摘要</label>' +
+      '<input class="input" id="nt-summary" type="text" maxlength="300" value="' + esc(n.summary || "") + '" placeholder="留空则自动截取正文前 80 字" autocomplete="off"></div>' +
+      '<div class="field admin-field"><label class="field__label" for="nt-level">级别</label>' +
+      '<select class="select input" id="nt-level">' +
+      ["normal", "important", "urgent"]
+        .map(function (v) {
+          return '<option value="' + v + '"' + (n.level === v ? " selected" : "") + ">" + LEVEL_LABEL[v] + "</option>";
+        })
+        .join("") +
+      "</select></div>" +
+      '<div class="field admin-field"><label class="field__label" for="nt-body">正文<span class="req">*</span></label>' +
+      '<textarea class="textarea admin-textarea" id="nt-body" rows="10" placeholder="支持空行分段；邮件会原样发送这段文字">' +
+      esc(n.body || "") +
+      "</textarea>" +
+      '<div class="field__error" id="nt-body-err"></div></div>' +
+      '<label class="admin-check"><input type="checkbox" id="nt-pin"' + (n.isPinned ? " checked" : "") + "> 置顶显示</label>";
+    return modalResult(body, isNew ? "新建通知" : "编辑通知", isNew ? "保存并发布" : "保存修改", function (wrap) {
+      var title = wrap.querySelector("#nt-title");
+      var bodyEl = wrap.querySelector("#nt-body");
+      var tErr = wrap.querySelector("#nt-title-err");
+      var bErr = wrap.querySelector("#nt-body-err");
+      var tv = ((title && title.value) || "").trim();
+      var bv = ((bodyEl && bodyEl.value) || "").trim();
+      var bad = false;
+      if (!tv) {
+        if (tErr) tErr.textContent = "请填写标题";
+        if (title) title.classList.add("is-error");
+        bad = true;
+      }
+      if (!bv) {
+        if (bErr) bErr.textContent = "请填写正文";
+        if (bodyEl) bodyEl.classList.add("is-error");
+        bad = true;
+      }
+      if (bad) return false;
+      var lv = wrap.querySelector("#nt-level");
+      var sm = wrap.querySelector("#nt-summary");
+      var pin = wrap.querySelector("#nt-pin");
+      return {
+        title: tv,
+        body: bv,
+        summary: ((sm && sm.value) || "").trim(),
+        level: (lv && lv.value) || "normal",
+        isPinned: Boolean(pin && pin.checked)
+      };
+    });
+  }
+
+  function saveNotice(id, data) {
+    var req = id
+      ? api.patch("/api/admin/notifications/" + id, data)
+      : api.post("/api/admin/notifications", Object.assign({ publish: true }, data));
+    return req.then(function (res) {
+      if (res.ok) {
+        NS.toast.success(id ? "通知已保存" : "通知已发布");
+        delete tabData.notifications;
+        loadTab("notifications", { force: true });
+      } else {
+        apiError(res.error, "保存失败");
+      }
+    });
+  }
+
+
   function renderActivePanel() {
     switch (activeTab) {
       case "requests":
         return renderRequests();
       case "submissions":
         return renderSubmissions();
+      case "notifications":
+        return renderNotifications();
       case "settings":
         return renderSettings();
       case "users":
@@ -1212,6 +1393,9 @@ window.HAAVK = window.HAAVK || {};
     },
     settings: function () {
       return api.get("/api/admin/settings");
+    },
+    notifications: function () {
+      return api.get("/api/admin/notifications");
     },
     users: function () {
       return api.get("/api/admin/users", { q: userQuery.q || undefined, role: userQuery.role || undefined });
@@ -1811,6 +1995,100 @@ window.HAAVK = window.HAAVK || {};
       });
     }
     if (act === "settings-save") return saveSettings();
+    if (act === "notice-new") {
+      return askNotice(null).then(function (data) {
+        if (!data) return;
+        return saveNotice(null, data);
+      });
+    }
+    if (act === "notice-edit") {
+      var cur = ((tabData.notifications && tabData.notifications.data && tabData.notifications.data.items) || []).filter(function (x) {
+        return String(x.id) === String(id);
+      })[0];
+      return askNotice(cur).then(function (data) {
+        if (!data) return;
+        return saveNotice(id, data);
+      });
+    }
+    if (act === "notice-publish") {
+      return askConfirm("发布通知", "发布后全体员工可在「通知」中看到。邮件推送需在发布后单独操作。", "确认发布").then(function (r) {
+        if (!r) return;
+        return api.post("/api/admin/notifications/" + id + "/publish", { pushMail: false }).then(function (res) {
+          if (res.ok) {
+            NS.toast.success("已发布");
+            delete tabData.notifications;
+            loadTab("notifications", { force: true });
+          } else {
+            apiError(res.error, "发布失败");
+          }
+        });
+      });
+    }
+    if (act === "notice-push") {
+      return askConfirm("推送邮件", "将向所有已订阅邮箱逐封发送该通知，可能耗时较久。确认推送？", "开始推送").then(function (r) {
+        if (!r) return;
+        NS.toast.info("正在推送，请稍候…");
+        return api.post("/api/admin/notifications/" + id + "/push-mail", {}).then(function (res) {
+          if (res.ok) {
+            var m = res.data || {};
+            NS.toast.success("推送完成：成功 " + (m.ok || 0) + " 封，失败 " + (m.fail || 0) + " 封");
+            delete tabData.notifications;
+            loadTab("notifications", { force: true });
+          } else {
+            apiError(res.error, "推送失败");
+          }
+        });
+      });
+    }
+    if (act === "notice-mail-log") {
+      return api.get("/api/admin/notifications/" + id + "/mail-log").then(function (res) {
+        if (!res.ok) return apiError(res.error, "读取投递记录失败");
+        var items = (res.data && res.data.items) || [];
+        var html = items.length
+          ? '<div class="admin-maillog">' +
+            items
+              .map(function (x) {
+                return (
+                  '<div class="admin-maillog__row">' +
+                  '<span class="admin-maillog__addr">' + esc(x.to) + "</span>" +
+                  '<span class="tag' + (x.ok ? " tag--ok" : "") + '">' + (x.ok ? "成功" : "失败") + "</span>" +
+                  '<span class="admin-maillog__err mini-note">' + esc(x.error || util.dateTime(x.createdAt)) + "</span>" +
+                  "</div>"
+                );
+              })
+              .join("") +
+            "</div>"
+          : '<div class="mini-note">还没有投递记录。</div>';
+        return modalResult(html, "邮件投递记录", "关闭", function () {
+          return true;
+        });
+      });
+    }
+    if (act === "notice-del") {
+      return askConfirm("删除通知", "删除后不可恢复，且会同时清除其邮件投递记录。", "确认删除").then(function (r) {
+        if (!r) return;
+        return api.del("/api/admin/notifications/" + id).then(function (res) {
+          if (res.ok) {
+            NS.toast.success("已删除");
+            delete tabData.notifications;
+            loadTab("notifications", { force: true });
+          } else {
+            apiError(res.error, "删除失败");
+          }
+        });
+      });
+    }
+    if (act === "mail-test") {
+      return api.post("/api/admin/mail/test", {}).then(function (res) {
+        if (res.ok) {
+          var m = res.data || {};
+          if (m.ok) NS.toast.success("邮件服务正常：" + (m.message || ""));
+          else NS.toast.error("连接失败：" + (m.message || "未知原因"));
+        } else {
+          apiError(res.error, "测试失败");
+        }
+      });
+    }
     if (act === "user-create") return createUser();
     if (act === "user-points") {
       var uname = actEl.getAttribute("data-name") || "该账号";

@@ -15,6 +15,7 @@ import * as migration002 from "./migrations/002_post_likes.js";
 import * as migration003 from "./migrations/003_submissions.js";
 import * as migration004 from "./migrations/004_submission_reward.js";
 import * as migration005 from "./migrations/005_officer_topics.js";
+import * as migration006 from "./migrations/006_notifications_mail_agent.js";
 import { seedAll, seedStats } from "./lib/seed.js";
 
 /* ------------------------------ 路由与处理器 ------------------------------ */
@@ -29,6 +30,8 @@ import * as catalogApi from "./api/catalog.js";
 import * as adminApi from "./api/admin.js";
 import * as mediaApi from "./api/media.js";
 import * as submissionsApi from "./api/submissions.js";
+import * as notificationsApi from "./api/notifications.js";
+import * as agentApi from "./api/agent.js";
 import { startWorkers } from "./workers/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -49,6 +52,8 @@ api.post("/api/me/password", authApi.updatePassword);
 api.post("/api/me/avatar", mediaApi.uploadAvatar);
 api.delete("/api/me/avatar", mediaApi.deleteAvatar);
 api.get("/api/me/requests", authApi.myRequests);
+api.get("/api/me/email", authApi.getEmail);
+api.patch("/api/me/email", authApi.updateEmail);
 api.post("/api/requests", authApi.createRequest);
 
 /* ------------------------------ 点数 ------------------------------ */
@@ -99,6 +104,26 @@ api.post("/api/admin/submissions/:id/review", adminApi.reviewSubmission);
 api.post("/api/admin/submissions/webdav/retry", adminApi.retryWebdav);
 api.post("/api/admin/submissions/webdav/test", adminApi.testWebdav);
 api.get("/api/admin/submissions/webdav/stats", adminApi.webdavStats);
+
+/* ------------------------------ 通知板块 ------------------------------ */
+api.get("/api/notifications", notificationsApi.listPublic);
+api.get("/api/notifications/:id", notificationsApi.getPublic);
+api.get("/api/admin/notifications", notificationsApi.listAdmin);
+api.post("/api/admin/notifications", notificationsApi.create);
+api.patch("/api/admin/notifications/:id", notificationsApi.update);
+api.delete("/api/admin/notifications/:id", notificationsApi.remove);
+api.post("/api/admin/notifications/:id/publish", notificationsApi.publish);
+api.post("/api/admin/notifications/:id/push-mail", notificationsApi.pushMail);
+api.get("/api/admin/notifications/:id/mail-log", notificationsApi.mailLog);
+api.post("/api/admin/mail/test", notificationsApi.testSmtp);
+api.get("/api/admin/mail/status", notificationsApi.mailStatus);
+
+/* ------------------------------ 自动化管家（令牌鉴权） ------------------------------ */
+api.get("/api/agent/ping", agentApi.ping);
+api.get("/api/agent/summary", agentApi.summary);
+api.get("/api/agent/tokens", agentApi.listTokens);
+api.post("/api/agent/tokens", agentApi.createToken);
+api.post("/api/agent/tokens/:id/revoke", agentApi.revokeToken);
 
 /* ------------------------------ 媒体 ------------------------------ */
 api.get("/media/avatars/:name", mediaApi.serveAvatar);
@@ -200,7 +225,7 @@ async function handle(req, res) {
 
 export function boot({ seed = true, workers = true, verbose = true } = {}) {
   const dbFile = process.env.HAAVK_DB || path.resolve(process.cwd(), "data/haavk.db");
-  const { applied, current } = migrate([migration001, migration002, migration003, migration004, migration005]);
+  const { applied, current } = migrate([migration001, migration002, migration003, migration004, migration005, migration006]);
   assertSchemaReady();
   if (verbose) {
     console.log(`[db] ${dbFile}`);

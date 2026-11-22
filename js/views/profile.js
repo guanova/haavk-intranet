@@ -114,6 +114,17 @@ window.HAAVK = window.HAAVK || {};
       util.attr(user.signature || "") +
       '">' +
       "</div>" +
+      '<div class="field">' +
+      '<label class="field__label" for="p-email">邮箱（用于接收集团通知）</label>' +
+      '<input class="input" id="p-email" type="email" maxlength="120" placeholder="name@example.com" value="' +
+      util.attr(user.email || "") +
+      '">' +
+      '<label class="admin-check" style="margin-top:8px">' +
+      '<input type="checkbox" id="p-email-opt"' + (user.emailOpt ? " checked" : "") + "> 重要通知发送到此邮箱" +
+      "</label>" +
+      '<div class="field__hint">仅用于集团通知推送，可随时关闭；不会公开显示。</div>' +
+      '<div class="field__error" id="err-email"></div>' +
+      "</div>" +
       '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">' +
       '<button type="button" class="btn btn--primary" id="save-profile">保存资料</button>' +
       '<span class="mini-note" id="save-hint"></span>' +
@@ -266,8 +277,32 @@ window.HAAVK = window.HAAVK || {};
         root.querySelector("#card-sig").textContent = res.data.user.signature || "（未填写签名）";
         root.querySelector("#save-hint").textContent = "已保存 " + util.dateTime(Date.now());
         NS.toast.success("资料已保存");
+        // 邮箱订阅单独保存（与昵称/签名解耦，避免一个字段失败全表单失败）
+        saveEmail(root);
       });
     });
+
+    /** 保存邮箱订阅（静默：仅在改动或报错时提示） */
+    function saveEmail(root) {
+      var mail = root.querySelector("#p-email");
+      var opt = root.querySelector("#p-email-opt");
+      var errMail = root.querySelector("#err-email");
+      var user = NS.store.getState().user || {};
+      var email = ((mail && mail.value) || "").trim();
+      var optIn = Boolean(opt && opt.checked);
+      if (email === (user.email || "") && optIn === Boolean(user.emailOpt)) return;
+      if (errMail) errMail.textContent = "";
+      NS.api.patch("/api/me/email", { email: email, optIn: optIn }).then(function (res) {
+        if (!res.ok) {
+          var fe = NS.api.fieldErrors(res.error);
+          if (errMail) errMail.textContent = fe.email || res.error.message;
+          NS.toast.error(res.error.message);
+          return;
+        }
+        NS.store.dispatch({ type: "user/set", payload: res.data.user });
+        NS.toast.success(optIn && email ? "已开启邮件通知" : "邮箱已保存");
+      });
+    }
 
     /* ---------------- 我的发帖 ---------------- */
     function loadMyPosts() {

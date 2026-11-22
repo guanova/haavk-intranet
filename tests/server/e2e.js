@@ -706,8 +706,95 @@ async function main() {
   const settingsWithWebdav = await jsonCall(admin, "GET", "/api/admin/settings");
   ok("站点配置包含 WebDAV 转存组", settingsWithWebdav.data.items.some((it) => it.grp === "webdav"), "");
 
-  /* ---------------- 15. 对账一致性 ---------------- */
-  section("15. 点数对账（流水 = 余额）");
+
+  /* ---------------- 15. 通知板块 / 邮件推送 / 自动化令牌 ---------------- */
+  section("15. 通知、邮件与自动化令牌");
+
+  const guestList0 = await jsonCall(guest, "GET", "/api/notifications?limit=5");
+  ok("游客可读通知列表", guestList0.status === 200 && Array.isArray(guestList0.data.items), JSON.stringify(guestList0.data).slice(0, 120));
+
+  const draftCreate = await jsonCall(admin, "POST", "/api/admin/notifications", {
+    title: "验收草稿通知",
+    body: "这条通知在草稿状态不应对外可见。第1行\n\n第2段。",
+    level: "important",
+    publish: false
+  });
+  const draftNotice = draftCreate.data && (draftCreate.data.notification || draftCreate.data);
+  ok("管理员可创建通知草稿", (draftCreate.status === 200 || draftCreate.status === 201) && !!draftNotice && !!draftNotice.id, JSON.stringify(draftCreate.data).slice(0, 160));
+  const draftId = draftNotice.id;
+
+  const guestListDraft = await jsonCall(guest, "GET", "/api/notifications?limit=50");
+  ok("草稿不对外可见", !guestListDraft.data.items.some((it) => it.id === draftId));
+
+  const pushDraft = await jsonCall(admin, "POST", `/api/admin/notifications/${draftId}/push-mail`, {});
+  ok("草稿不允许推送邮件", pushDraft.status === 400, JSON.stringify(pushDraft.error || pushDraft.body).slice(0, 140));
+
+  const published = await jsonCall(admin, "POST", `/api/admin/notifications/${draftId}/publish`, { pushMail: false });
+  ok("通知可发布（不带邮件）", published.status === 200, JSON.stringify(published.data).slice(0, 140));
+
+  const guestListPub = await jsonCall(guest, "GET", "/api/notifications?limit=50");
+  ok("发布后游客可见", guestListPub.data.items.some((it) => it.id === draftId));
+  ok("摘要留空时自动截取正文", !!guestListPub.data.items.find((it) => it.id === draftId).summary);
+
+  const pushNoMail = await jsonCall(admin, "POST", `/api/admin/notifications/${draftId}/push-mail`, {});
+  ok("未启用邮件时推送被拒绝并说明原因", pushNoMail.status >= 400 || pushNoMail.data.disabled === true, JSON.stringify(pushNoMail.data || pushNoMail.error).slice(0, 140));
+
+  const mailStatus = await jsonCall(admin, "GET", "/api/admin/mail/status");
+  ok("邮件状态可读（未配置）", mailStatus.status === 200 && mailStatus.data.configured === false, JSON.stringify(mailStatus.data));
+
+  const mailTest = await jsonCall(admin, "POST", "/api/admin/mail/test", {});
+  ok("未配置 SMTP 时测试连接报告失败", mailTest.status === 200 && mailTest.data.ok === false, JSON.stringify(mailTest.data).slice(0, 140));
+
+  const settingsMail = await jsonCall(admin, "GET", "/api/admin/settings");
+  ok("站点配置包含邮件推送组", settingsMail.data.items.some((it) => it.grp === "mail"), "");
+
+  // 邮箱订阅：本人可写，且开启订阅必须带地址
+  const emailBad = await jsonCall(user, "PATCH", "/api/me/email", { email: "", optIn: true });
+  ok("开启邮件订阅但未填地址被拒绝", emailBad.status === 400 && !!(emailBad.error.details && emailBad.error.details.fields && emailBad.error.details.fields.email), JSON.stringify(emailBad.error).slice(0, 140));
+  const emailBad2 = await jsonCall(user, "PATCH", "/api/me/email", { email: "not-an-email", optIn: true });
+  ok("非法邮箱格式被拒绝", emailBad2.status === 400);
+  const emailOk = await jsonCall(user, "PATCH", "/api/me/email", { email: "qa@example.com", optIn: true });
+  ok("合法邮箱可开启订阅", emailOk.status === 200 && emailOk.data.optIn === true, JSON.stringify(emailOk.data).slice(0, 140));
+  const emailRead = await jsonCall(user, "GET", "/api/me/email");
+  ok("订阅设置可回读", emailRead.data.email === "qa@example.com" && emailRead.data.optIn === true);
+  const emailGuest = await jsonCall(guest, "GET", "/api/me/email");
+  ok("未登录不可读订阅设置", emailGuest.status === 401);
+
+  // 自动化令牌
+  const { createAgentToken, revokeAgentToken } = await import("../../server/lib/agent.js");
+  const { findUserByUsername } = await import("../../server/lib/auth.js");
+  const adminRow = findUserByUsername("webops_admin");
+  const tok = createAgentToken({ name: "e2e-agent", ownerId: adminRow.id, scope: "admin" });
+
+  const pingNoTok = await jsonCall(guest, "GET", "/api/agent/ping");
+  ok("无令牌访问管家接口被拒绝", pingNoTok.status === 401);
+
+  const agentCall = async (method, url, body) => {
+    const r = await guest.call(method, url, body, { headers: { "x-agent-token": tok.token } });
+    return { status: r.status, body: r.json, error: r.json && r.json.error, data: r.json && r.json.data };
+  };
+
+  const ping = await agentCall("GET", "/api/agent/ping");
+  ok("令牌可通过管家接口鉴权", ping.status === 200 && ping.data.via === "agent-token" && ping.data.identity.username === "webops_admin", JSON.stringify(ping.data).slice(0, 160));
+
+  const sum = await agentCall("GET", "/api/agent/summary");
+  ok("管家摘要返回全站计数", sum.status === 200 && sum.data.users.total > 0 && sum.data.forum.posts > 0, JSON.stringify(sum.data && sum.data.users));
+
+  const tokCreate = await agentCall("POST", "/api/agent/tokens", { name: "bad" });
+  ok("令牌不能创建新令牌", tokCreate.status === 403);
+
+  const agentPosts = await agentCall("GET", "/api/admin/overview");
+  ok("令牌可用管理员接口", agentPosts.status === 200 && agentPosts.data.counts, "");
+
+  revokeAgentToken(tok.id);
+  const pingRevoked = await agentCall("GET", "/api/agent/ping");
+  ok("吊销后令牌立即失效", pingRevoked.status === 401);
+
+  const tokRefresh = await jsonCall(guest, "POST", "/api/agent/tokens", { name: "x" });
+  ok("非管理员无法创建令牌", tokRefresh.status === 401 || tokRefresh.status === 403);
+
+  /* ---------------- 16. 对账一致性 ---------------- */
+  section("16. 点数对账（流水 = 余额）");
   const overview = await jsonCall(admin, "GET", "/api/admin/overview");
   ok("管理概览显示对账一致", overview.data.reconciled === true, JSON.stringify(overview.data.counts));
 
@@ -717,8 +804,8 @@ async function main() {
   ok("无重复每日领取记录", rec.duplicateClaims.length === 0, JSON.stringify(rec.duplicateClaims));
   ok("回复计数与回复表一致", rec.replyCountMismatches.length === 0, JSON.stringify(rec.replyCountMismatches.slice(0, 3)));
 
-  /* ---------------- 16. AI 高管自主发声 ---------------- */
-  section("16. AI 高管代理");
+  /* ---------------- 17. AI 高管自主发声 ---------------- */
+  section("17. AI 高管代理");
   const { runAutoPosts, runAutoReplies } = await import("../../server/workers/index.js");
   const createdPosts = runAutoPosts(Date.now() + 10 * 60_000);
   ok("AI 高管可自主发帖", createdPosts >= 1, String(createdPosts));
@@ -728,8 +815,8 @@ async function main() {
   const mentionedPost = (await jsonCall(guest, "GET", "/api/posts?filter=mention")).data.items[0];
   ok("存在带呼叫记录的帖子（可追踪）", !!mentionedPost);
 
-  /* ---------------- 17. 数据持久化（重启不丢） ---------------- */
-  section("17. 持久化验证");
+  /* ---------------- 18. 数据持久化（重启不丢） ---------------- */
+  section("18. 持久化验证");
   const beforeRestart = await jsonCall(guest, "GET", `/api/posts?author=${meRow.id}`);
   const countBefore = beforeRestart.data.total;
   const avatarBefore = (await jsonCall(guest, "GET", "/api/me")); // 游客

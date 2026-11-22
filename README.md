@@ -234,6 +234,9 @@ sqlite3 data/haavk.db ".backup 'backup/haavk-$(date +%F).db'"
 | 点数与 @ 风控参数 | 管理面板 → 站点配置 |
 | 资料征集页分类与说明文案 | `js/views/collect.js` 的 `TYPES` / `INTRO` |
 | @ 三支回执文案 | `server/constants.js` 的 `MENTION_COPY`（**唯一副本，改动需同步更新验收清单**） |
+| 集团通知正文 | 管理面板 → 通知（存 `notifications` 表） |
+| SMTP 邮件服务器 | 管理面板 → 站点配置 → 邮件推送（SMTP） |
+| 自动化管家令牌 | `node server/tools/agent-token.js create --name X --owner webops_admin` |
 | 数据表结构 | `server/migrations/`（**新增迁移文件，不要改已有迁移**） |
 | 路由与守卫 | `js/app.js` 的 `NS.router.add(...)` 与 `js/core/router.js` |
 | 密码与会话策略 | `server/lib/password.js`、`server/constants.js` 的 `SESSION` |
@@ -247,3 +250,5 @@ sqlite3 data/haavk.db ".backup 'backup/haavk-$(date +%F).db'"
 3. **单进程架构**：SQLite 适合单实例部署；如需多实例横向扩展，需把 `server/lib/db.js` 换成 Postgres/MySQL 客户端并把缓存与限流外置。
 4. **破解/黑入玩法未实现**：这与业务无关，未纳入本平台范围。
 5. **演示备案号不是真实备案**：上线必须替换。
+6. **邮件推送是串行逐封发送**：几百人以内够用；更大规模需换成队列 + 批量 SMTP，并注意邮箱商的日发信限额。
+7. **自动化令牌等同管理员权限**：只给可信脚本，泄露立即 `agent-token.js revoke --id N`。

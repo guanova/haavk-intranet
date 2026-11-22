@@ -933,3 +933,12 @@ html::-webkit-scrollbar {
   font-size: 12px;
   color: var(--c-text-mute);
 }
+
+/* 标签补充色（通知状态） */
+.tag--ok {
+  color: #1a7f37;
+}
+
+.tag--pin {
+  color: var(--c-brand);
+}

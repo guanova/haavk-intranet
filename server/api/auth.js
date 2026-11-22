@@ -223,6 +223,42 @@ export async function updateMe(ctx) {
   return sendOk(ctx.res, { user: publicUser(findUserById(user.id)) });
 }
 
+/**
+ * 邮箱订阅设置（通知推送）
+ * 只接受合法地址；关闭订阅时保留地址，便于下次恢复。
+ */
+export async function updateEmail(ctx) {
+  assertSameOrigin(ctx.req);
+  const user = requireAuth(ctx);
+  const body = await readJsonBody(ctx.req);
+  const raw = String(body.email == null ? "" : body.email).trim();
+  const optIn = body.optIn === true || body.optIn === 1 || body.optIn === "1";
+
+  if (raw && !/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(raw)) {
+    throw AppError.badRequest("邮箱格式不正确", { fields: { email: "邮箱格式不正确" } });
+  }
+  if (raw.length > 160) throw AppError.badRequest("邮箱地址过长");
+  if (optIn && !raw) {
+    throw AppError.badRequest("开启邮件通知前请先填写邮箱", { fields: { email: "请填写邮箱地址" } });
+  }
+
+  run(
+    "UPDATE users SET email = ?, email_opt = ?, updated_at = ? WHERE id = ?",
+    raw,
+    optIn && raw ? 1 : 0,
+    Date.now(),
+    user.id
+  );
+  const row = findUserById(user.id);
+  return sendOk(ctx.res, { user: publicUser(row), email: raw, optIn: Boolean(row.email_opt) });
+}
+
+/** GET /api/me/email */
+export function getEmail(ctx) {
+  const user = requireAuth(ctx);
+  return sendOk(ctx.res, { email: user.email || "", optIn: Boolean(user.email_opt) });
+}
+
 export async function updatePassword(ctx) {
   assertSameOrigin(ctx.req);
   const user = requireAuth(ctx);

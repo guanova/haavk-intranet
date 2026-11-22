@@ -65,6 +65,9 @@ window.HAAVK = window.HAAVK || {};
       icon("chevron-left", "", 18) +
       '<i class="topbar__sep" aria-hidden="true"></i>' +
       "<span>活动</span></a>" +
+      '<a class="topbar__notice" href="#/notifications" title="集团通知">' +
+      icon("info", "", 16) +
+      "<span>通知</span></a>" +
       '<div class="topbar__deco" aria-hidden="true"></div>' +
       "</div></div>"
     );

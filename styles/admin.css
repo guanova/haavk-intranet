@@ -675,3 +675,71 @@
 
 /* [fixed-canvas] 已废除窄屏媒体查询 @media max-width: 640px) */
 
+
+/* ============================ 通知管理 ============================ */
+
+.admin-mailbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  margin-bottom: var(--sp-4);
+  background: #f6f8fa;
+  border: 1px solid var(--c-line-soft);
+  flex-wrap: wrap;
+}
+
+.admin-mailbar__state {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-text);
+}
+
+.admin-mailbar__state .is-ok {
+  color: #1a7f37;
+}
+
+.admin-mailbar__state .is-warn {
+  color: #b45309;
+}
+
+.admin-maillog {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.admin-maillog__row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--c-line-soft);
+  font-size: 12px;
+}
+
+.admin-maillog__addr {
+  font-family: var(--font-num);
+  color: var(--c-text);
+  min-width: 180px;
+}
+
+.admin-maillog__err {
+  margin-left: auto;
+  text-align: right;
+  max-width: 60%;
+  word-break: break-all;
+}
+
+.admin-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--c-text);
+  user-select: none;
+}
+
+.admin-check input {
+  width: 14px;
+  height: 14px;
+}
